@@ -10,6 +10,7 @@ class RenderEngine:
         self.frame_time = 1000 // max_fps if max_fps > 0 else 0
         self.hw_render = hw_render
         self.scale = scale
+        self.running = False
 
     def create(self):
         sdl2.ext.init()
@@ -29,12 +30,20 @@ class RenderEngine:
         sdl2.SDL_GetRendererInfo(self.ctx.sdlrenderer, info)
 
         self.ctx.present()
+        self.running = True
 
     def clear(self):
         self.ctx.clear(0xFFFFFFFF)
 
     def update(self):
         self.ctx.present()
+
+    def process_eventes(self):
+        events = sdl2.ext.get_events()
+        for event in events:
+            if event.type == sdl2.SDL_QUIT:
+                self.running = False
+                break
 
     def draw_circle(self, x, y, radius, color=(255, 0, 0, 255)): # color = 0xFF0000FF
         if (sdl2.sdlgfx.circleColor(self.ctx.sdlrenderer, x, self.h - y, radius, sdl2.ext.Color(*color)) == -1):

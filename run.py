@@ -9,12 +9,12 @@ from simulation import Circle, Simulation
 def main():
     # ·window size, min/max circle radius values, spawn limit, gravity
     parser = argparse.ArgumentParser()
-    parser.add_argument("-x", "--size_x", type=int, default=800)
-    parser.add_argument("-y", "--size_y", type=int, default=600)
-    parser.add_argument("-min_rad", type=float, default=10)
-    parser.add_argument("-max_rad", type=float, default=50)
-    parser.add_argument("-spawn_limit", type=int, default=80)
-    parser.add_argument("-gravity", type=float, default=9.8)
+    parser.add_argument("-x", "--size_x", type=int, default=800, help="Set width of window")
+    parser.add_argument("-y", "--size_y", type=int, default=600, help="Set height of window")
+    parser.add_argument("-min_rad", type=float, default=10, help="Set minimum radii of generated circles")
+    parser.add_argument("-max_rad", type=float, default=50, help="Set maximum radii of generated circles")
+    parser.add_argument("-spawn_limit", type=int, default=100, help="Set maximum number of circles to spawn")
+    parser.add_argument("-gravity", type=float, default=9.8, help="Set value of gravity")
     p = parser.parse_args()
 
     # World attributes
@@ -55,7 +55,7 @@ def main():
 
     # Main update loop
     prev_time = render.get_elapsed_time()
-    while True:
+    while render.running:
         curr_time = render.get_elapsed_time()
         dt = (curr_time - prev_time)  # in ms
         prev_time = curr_time
@@ -69,8 +69,9 @@ def main():
                 spawn_timer = 0
 
         # Update simulation
-        # for _ in range(5):
-        #     sim.update(dt / 5.0)
+        # Update in multiple steps between renders
+        # for _ in range(3):
+        #     sim.update(dt / (1000.0 * 3))
         sim.update(dt / 1000.0)
         
         # Draw stuff
@@ -82,6 +83,7 @@ def main():
             # color = int(15 + (c.mass / 11) * 238)
             # render.draw_circle(x, y, rad, color=(255, 0, 0, color))
 
+        render.process_eventes()
         render.update()
 
         # Delay until next frame (if fps is capped)
